@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  user-service:
+    image: fiftyfive5555/user-service:latest
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    container_name: user-service
+    ports:
+      - "8001:8001"
+    environment:
+      - server.port=8081
+      - spring.cloud.config.uri=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8888
+      - eureka.instance.ip-address=ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com
+      - eureka.instance.prefer-ip-address=true
+      - eureka.client.serviceUrl.defaultZone=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8761/eureka/
+    networks:
+      - steamvote-network
+
+  steamapp-service:
+    image: fiftyfive5555/steamapp-service:latest
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    container_name: steamapp-service
+    ports:
+      - "8002:8002"
+    environment:
+      - server.port=8082
+      - spring.cloud.config.uri=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8888
+      - eureka.instance.ip-address=ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com
+      - eureka.instance.prefer-ip-address=true
+      - eureka.client.serviceUrl.defaultZone=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8761/eureka/
+    networks:
+      - steamvote-network
+
+  vote-service:
+    image: fiftyfive5555/vote-service:latest
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    container_name: vote-service
+    ports:
+      - "8003:8003"
+    environment:
+      - server.port=8083
+      - spring.cloud.config.uri=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8888
+      - eureka.instance.ip-address=ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com
+      - eureka.instance.prefer-ip-address=true
+      - eureka.client.serviceUrl.defaultZone=http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8761/eureka/
+    networks:
+      - steamvote-network
+
+networks:
+  steamvote-network: 
+    external: true

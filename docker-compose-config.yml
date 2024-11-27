@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  config-service:
+    image: fiftyfive5555/config-service:latest
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    networks:
+      steamvote-network:
+        ipv4_address: 172.18.0.2
+
+  discovery-service:
+    image: fiftyfive5555/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+    depends_on:
+      - config-service
+    networks:
+      steamvote-network:
+        ipv4_address: 172.18.0.3
+
+  gateway-service:
+    image: fiftyfive5555/gateway-service:latest
+    container_name: gateway-service
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    environment:
+      - spring.cloud.config.uri=http://config-service:8888
+      - eureka.client.serviceUrl.defaultZone=http://discovery-service:8761/eureka/
+    depends_on:
+      - config-service
+      - discovery-service
+    networks:
+      steamvote-network:
+        ipv4_address: 172.18.0.5
+
+networks:
+  steamvote-network: 
+    external: true
