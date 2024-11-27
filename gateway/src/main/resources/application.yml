@@ -1,0 +1,51 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    config:
+      uri: http://127.0.0.1:8888
+      name: rating
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - 'http://localhost:3000'
+              - 'https://steamvote-front.vercel.app'
+            allow-credentials: true
+            allowedHeaders: '*'
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
+      routes:
+        - id: user-service
+          uri: http://ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com:8001
+          predicates:
+            - Path=/user/**
+        - id: steamapp-service
+          uri: http://ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com:8002
+          predicates:
+            - Path=/steam-app/**
+          filters:
+            - AuthorizationHeaderFilter
+        - id: vote-service
+          uri: http://ec2-13-211-90-210.ap-southeast-2.compute.amazonaws.com:8003
+          predicates:
+            - Path=/vote/**
+          filters:
+            - AuthorizationHeaderFilter

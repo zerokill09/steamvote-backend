@@ -1,0 +1,5 @@
+spring:
+  cloud:
+    config:
+      uri: http://ec2-54-252-169-253.ap-southeast-2.compute.amazonaws.com:8888
+      name: rating
